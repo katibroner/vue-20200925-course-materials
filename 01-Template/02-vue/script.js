@@ -12,14 +12,16 @@ function getMeetups() {
 const app = new Vue({
   el: "#app",
 
-  data: {
-    rawMeetups: [],
-    filter: {
-      date: 'all',
-      participation: 'all',
-      search: '',
-    },
-    view: 'list',
+  data() {
+    return {
+      rawMeetups: [],
+      filter: {
+        date: 'all',
+        participation: 'all',
+        search: '',
+      },
+      view: 'list',
+    };
   },
 
   mounted() {
