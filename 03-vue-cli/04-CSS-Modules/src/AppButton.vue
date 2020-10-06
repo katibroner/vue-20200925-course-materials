@@ -1,5 +1,5 @@
 <template>
-  <button class="button">
+  <button :class="$style.button">
     <slot />
   </button>
 </template>
@@ -31,5 +31,10 @@ export default {
 
 .button:hover {
   border-color: #b8c5e2;
+}
+
+/* Работает через global */
+.button :global(.deep){
+  color: red;
 }
 </style>
