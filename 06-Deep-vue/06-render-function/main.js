@@ -3,18 +3,21 @@ import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.esm.browser.js
 const TextDiv = {
   name: 'TextDiv',
 
-  template: '<div>Text</div>',
+  render(createElement) {
+    return createElement('div', 'Text')
+  }
 };
 
 const ParagraphComponent = {
   name: 'ParagraphComponent',
 
-  template: '<p><slot /></p>',
+  render(createElement) {
+    return createElement('p', this.$slots.default);
+  },
 };
 
 const CounterButton = {
   name: 'CounterButton',
-  template: `<button @click="$emit('change', count + 1)">{{ count }}</button>`,
 
   props: {
     count: Number,
@@ -24,16 +27,19 @@ const CounterButton = {
     prop: 'count',
     event: 'change',
   },
-};
+
+  render(h) {
+    return h('button', {
+      on: {
+        click: () => this.$emit('change', this.count + 1),
+      },
+    }, this.count);
+  }
+}
 
 
 const App = {
   name: 'App',
-
-  template: `<paragraph-component>
-  <text-div />
-  <counter-button v-model="count" />
-  </paragraph-component>`,
 
   components: {
     ParagraphComponent,
@@ -45,6 +51,21 @@ const App = {
       count: 0,
     };
   },
+
+  render(h) {
+    return h(ParagraphComponent, [
+      h(TextDiv),
+      h(CounterButton, {
+        model: {
+          value: this.count,
+          callback: (v) => {
+            this.count = v;
+          },
+          expression: "count",
+        },
+      }),
+    ]);
+  }
 };
 
 const app = new Vue({
