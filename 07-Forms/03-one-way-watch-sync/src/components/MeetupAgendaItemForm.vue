@@ -5,7 +5,7 @@
     </button>
 
     <div class="form-group">
-      <select v-model="agendaItem_.type" title="Тип" >
+      <select v-model="agendaItem_.type" title="Тип" @change="handleChange" >
         <option value="other">Другое</option>
       </select>
     </div>
@@ -19,6 +19,7 @@
             v-model="agendaItem_.startsAt"
             type="time"
             placeholder="00:00"
+            @change="handleChange"
           />
         </div>
       </div>
@@ -30,6 +31,7 @@
             v-model="agendaItem_.endsAt"
             type="time"
             placeholder="00:00"
+            @change="handleChange"
           />
         </div>
       </div>
@@ -37,24 +39,20 @@
 
     <div class="form-group">
       <label class="form-label">Заголовок</label>
-      <input class="form-control" v-model="agendaItem_.title"  />
+      <input class="form-control" v-model="agendaItem_.title" @change="handleChange" />
     </div>
-
     <div class="form-group">
       <label class="form-label">Описание</label>
       <textarea
         class="form-control"
-        v-model="agendaItem_.description"
+        v-model="agendaItem_.description" @change="handleChange"
       ></textarea>
     </div>
-
-    <button type="button" @click="handleChange">Save</button>
   </div>
 </template>
 
 <script>
 import AppIcon from '@/components/AppIcon';
-import { deepClone } from '@/utils';
 
 export default {
   name: 'MeetupAgendaItemForm',
@@ -72,13 +70,13 @@ export default {
 
   data() {
     return {
-      agendaItem_: deepClone(this.agendaItem),
+      agendaItem_: { ...this.agendaItem },
     };
   },
 
   methods: {
     handleChange() {
-      this.$emit('change', deepClone(this.agendaItem_));
+      this.$emit('update:agendaItem', { ...this.agendaItem_ });
     },
   },
 };
