@@ -1,15 +1,28 @@
 import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.esm.browser.js';
 
-import { localPropMixin } from './local-prop-mixin.js';
-import { windowSizeMixin } from './window-size-mixin.js';
+import { localProp } from './local-prop.js';
+import { windowSize } from './window-size.js';
 
+const userLocalProp = localProp('user', { type: Object, required: true });
 const UserForm = {
   template: `<form>
   <p>FirstName: <input v-model="user_.firstName"></p>
   <p>LastName: <input v-model="user_.lastName"></p>
 </form>`,
 
-  mixins: [localPropMixin('user', { type: Object, required: true })],
+  props: {
+    ...userLocalProp.props,
+  },
+
+  data() {
+    return {
+      ...userLocalProp.data.apply(this),
+    }
+  },
+
+  watch: {
+    ...userLocalProp.watch,
+  },
 };
 
 const App = {
@@ -29,10 +42,21 @@ const App = {
         firstName: 'firstName',
         lastName: 'lastName',
       },
+      ...windowSize.data.apply(this),
     };
   },
 
-  mixins: [windowSizeMixin],
+  mounted() {
+    windowSize.mounted.apply(this);
+  },
+
+  methods: {
+    ...windowSize.methods,
+  },
+
+  beforeDestroy() {
+    windowSize.beforeDestroy.apply(this);
+  },
 };
 
 const app = new Vue({

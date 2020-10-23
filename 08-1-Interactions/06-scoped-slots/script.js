@@ -1,13 +1,17 @@
 import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.esm.browser.js';
 
 const ListView = {
-  template: `
-    <ul>
-    <li v-for="(item, idx) in items_">
+  template: `<div>
+  <template v-for="(item, idx) in items_">
+    <slot name="default" :item="item">
       <span>{{ item }}</span>
+    </slot>
+    <slot name="remove-button" :remove="() => remove(idx)">
       <button @click="remove(idx)">x</button>
-    </li>
-    </ul>`,
+    </slot>
+  </template>
+</div>`,
+
   props: {
     items: Array,
   },
@@ -28,7 +32,14 @@ const ListView = {
 
 const App = {
   template: `<div>
-  <list-view :items.sync="list" />
+  <list-view :items.sync="list">
+    <template #default="scope">
+      <b>{{ scope.item }}</b>
+    </template>
+    <template #remove-button="{ remove }">
+      <a href="#" @click="remove">Remove</a>
+    </template>
+  </list-view>
 </div>`,
 
   components: {

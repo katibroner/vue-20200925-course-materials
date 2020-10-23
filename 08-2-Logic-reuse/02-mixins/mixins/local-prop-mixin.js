@@ -1,4 +1,4 @@
-const localPropName = propName => propName + '_';
+const localPropName = propName => `${propName}_`;
 
 const deepEqual = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const deepClone = obj => JSON.parse(JSON.stringify(obj));
@@ -28,7 +28,7 @@ export const localPropMixin = (propName, propOptions) => ({
     [localPropName(propName)]: {
       deep: true,
       handler(newValue) {
-        this.$emit('update:' + propName, deepClone(newValue));
+        this.$emit(`update:${propName}`, deepClone(newValue));
       },
     },
   },

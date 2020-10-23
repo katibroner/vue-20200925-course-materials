@@ -1,11 +1,10 @@
 import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.esm.browser.js';
 
-import AppToast from './AppToast.js';
 import SamplePage from './SamplePage.js';
 
-import { toaster } from './toaster.js';
+import { ToasterPlugin } from './ToasterPlugin.js';
 
-Vue.prototype.$toaster = toaster;
+Vue.use(ToasterPlugin);
 
 const App = {
   name: 'App',
@@ -16,7 +15,6 @@ const App = {
 
   components: {
     SamplePage,
-    AppToast,
   },
 };
 

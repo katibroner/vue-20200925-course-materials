@@ -5,7 +5,7 @@ const ChildComponent1 = {
 
   data() {
     return {
-      value: 'C2',
+      value: 'C1',
     };
   },
 };
@@ -15,7 +15,7 @@ const ChildComponent2 = {
 
   data() {
     return {
-      value: 'C1',
+      value: 'C2',
     };
   },
 };
@@ -45,10 +45,9 @@ const MiddleComponent = {
     // После следующего тика дети будут уже смонтированы
     this.$nextTick().then(() => {
       // forceUpdate заставит перерендерить компонент и вывести новое значение $children
-      // this.$forceUpdate();
+      this.$forceUpdate();
     });
-
-  }
+  },
 };
 
 const ParentComponent = {
