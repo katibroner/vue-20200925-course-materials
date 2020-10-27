@@ -1,11 +1,11 @@
 <template>
   <div class="form-section form-section_inner">
-    <button type="button" class="remove-button" @click="$emit('remove')">
-      <app-icon icon="trash" />
+    <button type="button" class="remove-button" @click="removeAgendaItem(index)">
+      <app-icon icon="trash"/>
     </button>
 
     <div class="form-group">
-      <select v-model="agendaItem.type" title="Тип">
+      <select v-model="type" title="Тип">
         <option value="other">Другое</option>
       </select>
     </div>
@@ -16,7 +16,7 @@
           <label class="form-label">Начало</label>
           <input
             class="form-control"
-            v-model="agendaItem.startsAt"
+            v-model.lazy="startsAt"
             type="time"
             placeholder="00:00"
           />
@@ -27,7 +27,7 @@
           <label class="form-label">Окончание</label>
           <input
             class="form-control"
-            v-model="agendaItem.endsAt"
+            v-model.lazy="endsAt"
             type="time"
             placeholder="00:00"
           />
@@ -37,13 +37,13 @@
 
     <div class="form-group">
       <label class="form-label">Заголовок</label>
-      <input class="form-control" v-model="agendaItem.title" />
+      <input class="form-control" v-model.lazy="title"/>
     </div>
     <div class="form-group">
       <label class="form-label">Описание</label>
       <textarea
         class="form-control"
-        v-model="agendaItem.description"
+        v-model.lazy="description"
       ></textarea>
     </div>
   </div>
@@ -51,19 +51,58 @@
 
 <script>
 import AppIcon from '@/components/AppIcon';
+import { mapMutations } from 'vuex';
+
+const mapField = (field, getter, setter) => ({
+  get() {
+    return getter(this, field);
+  },
+  set(value) {
+    setter(this, field, value);
+  },
+});
+
+const mapFields = (fields, getter, setter) => fields.reduce((map, field) => ({
+  ...map,
+  [field]: mapField(field, getter, setter),
+}), {});
 
 export default {
   name: 'MeetupAgendaItemForm',
 
   props: {
-    agendaItem: {
-      type: Object,
+    index: {
+      type: Number,
       required: true,
     },
   },
 
   components: {
     AppIcon,
+  },
+
+  computed: {
+    agendaItem() {
+      return this.$store.state['form'].meetup.agenda[this.index];
+    },
+
+    ...mapFields(['type', 'startsAt', 'endsAt', 'title', 'description'],
+      (vm, field) => vm.agendaItem[field],
+      (vm, field, value) => {
+        vm.setMeetupAgendaItemField({
+          index: vm.index,
+          field,
+          value,
+        });
+      }
+    ),
+  },
+
+  methods: {
+    ...mapMutations('form', {
+      setMeetupAgendaItemField: 'SET_MEETUP_AGENDA_ITEM_FIELD',
+      removeAgendaItem: 'REMOVE_AGENDA_ITEM',
+    }),
   },
 };
 </script>

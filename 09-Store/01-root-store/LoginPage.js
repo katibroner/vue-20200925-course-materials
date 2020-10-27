@@ -1,3 +1,5 @@
+import { loginWithApi } from './api.js';
+
 export default {
   name: 'LoginPage',
 
@@ -22,6 +24,15 @@ export default {
   },
 
   methods: {
-    handleSubmit() {},
+    handleSubmit() {
+      loginWithApi(this.email, this.password).then((user) => {
+        this.$root.setUser(user);
+      }).catch((err) => {
+        alert(err.message);
+      });
+
+      // or
+      // this.$root.login(this.email, this.password).then().catch();
+    },
   },
 };

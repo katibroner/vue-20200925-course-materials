@@ -4,25 +4,24 @@
       <fieldset class="form-section">
         <div class="form-group">
           <label class="form-label">Название</label>
-          <input class="form-control" v-model="meetup.title" />
+          <input class="form-control" v-model.lazy="title"/>
         </div>
         <div class="form-group">
           <label class="form-label">Место проведения</label>
-          <input class="form-control" v-model="meetup.place" />
+          <input class="form-control" v-model.lazy="place"/>
         </div>
       </fieldset>
 
       <h3 class="form__section-title">Программа</h3>
       <meetup-agenda-item-form
-        v-for="(agendaItem, idx) in meetup.agenda"
+        v-for="(agendaItem, index) in meetup.agenda"
         :key="agendaItem.id"
-        :agenda-item="agendaItem"
-        @remove="removeAgendaItem(idx)"
+        :index="index"
         class="mb-3"
       />
 
       <div class="form-section_append">
-        <button type="button" @click="addAgendaItem">
+        <button type="button" @click="pushAgendaItem">
           + Добавить пункт программы
         </button>
       </div>
@@ -30,7 +29,7 @@
 
     <div class="meetup-form__aside">
       <div class="meetup-form__aside_stick">
-        <button type="button" class="button button_secondary button_block">
+        <button type="button" class="button button_secondary button_block" @click="removeMeetup">
           Cancel
         </button>
         <button class="button button_primary button_block" type="submit">
@@ -43,19 +42,21 @@
 
 <script>
 import MeetupAgendaItemForm from './MeetupAgendaItemForm';
+import { mapMutations, mapState } from 'vuex';
 
-function buildAgendaItem() {
-  return {
-    id: Math.random(),
-    startsAt: '00:00',
-    endsAt: '00:00',
-    type: 'other',
-    title: null,
-    description: null,
-    speaker: null,
-    language: null,
-  };
-}
+const mapField = (field, getter, setter) => ({
+  get() {
+    return getter(this, field);
+  },
+  set(value) {
+    setter(this, field, value);
+  },
+});
+
+const mapFields = (fields, getter, setter) => fields.reduce((map, field) => ({
+  ...map,
+  [field]: mapField(field, getter, setter),
+}), {});
 
 export default {
   name: 'MeetupForm',
@@ -64,22 +65,26 @@ export default {
     MeetupAgendaItemForm,
   },
 
-  props: {
-    meetup: {
-      type: Object,
-      required: true,
-    },
+  computed: {
+    ...mapState({
+      meetup: (state) => state['form'].meetup,
+    }),
+
+    ...mapFields(['title', 'place'],
+      (vm, field) => vm.meetup[field],
+      (vm, field, value) => {
+        vm.setMeetupField({ field, value });
+      },
+    ),
   },
 
   methods: {
-    addAgendaItem() {
-      const newItem = buildAgendaItem();
-      this.meetup.agenda.push(newItem);
-    },
-
-    removeAgendaItem(idx) {
-      this.meetup.agenda.splice(idx, 1);
-    },
+    ...mapMutations('form', {
+      setMeetupField: 'SET_MEETUP_FIELD',
+      setMeetupAgendaItemField: 'SET_MEETUP_AGENDA_ITEM_FIELD',
+      pushAgendaItem: 'PUSH_AGENDA_ITEM',
+      removeMeetup: 'REMOVE_MEETUP',
+    }),
   },
 };
 </script>
