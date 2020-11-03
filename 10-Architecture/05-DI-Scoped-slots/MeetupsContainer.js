@@ -1,5 +1,3 @@
-import { MeetupsFilters } from './MeetupsFilters.js';
-import { MeetupsView } from './MeetupsView.js';
 import meetups from './meetups-data.js';
 
 function getMeetups() {
@@ -10,18 +8,16 @@ function getMeetups() {
   })
 }
 
-export const MeetupsPage = {
+export const MeetupsContainer = {
   template: `
     <div>
       <div class="filters">
-        <meetups-filters :filter.sync="filter" />
+        <slot name="filters" :filter="filter" :updateFilter="(newFilter) => { filter = newFilter }"></slot>
       </div>
       <div class="meetups-view">
-        <meetups-view v-if="meetups" :meetups="filteredMeetups"/>
+        <slot name="view" :meetups="filteredMeetups"></slot>
       </div>
     </div>`,
-
-  components: { MeetupsView, MeetupsFilters },
 
   data() {
     return {

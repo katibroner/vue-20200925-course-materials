@@ -1,17 +1,6 @@
 import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.esm.browser.js';
 
-const ListView = {
-  template: `<div>
-  <template v-for="(item, idx) in items_">
-    <slot name="default" :item="item">
-      <span>{{ item }}</span>
-    </slot>
-    <slot name="remove-button" :remove="() => remove(idx)">
-      <button @click="remove(idx)">x</button>
-    </slot>
-  </template>
-  </div>`,
-
+const RenderlessListView = {
   props: {
     items: Array,
   },
@@ -28,22 +17,47 @@ const ListView = {
       this.$emit('update:items', [...this.items_]);
     },
   },
+
+  render(h) {
+    return this.$scopedSlots.default({
+      items: this.items,
+      methods: {
+        remove: this.remove,
+      },
+    });
+  },
 };
+
+
+const UlListView = {
+  template: `<renderless-list-view :items="list" @update:items="$emit('update:list', $event)">
+  <template #default="{ methods, items }">
+    <ul>
+      <li v-for="(item, idx) in items">
+        <span>{{ item }}</span>
+        <button @click="methods.remove(idx)">x</button>
+      </li>
+    </ul>
+  </template>
+</renderless-list-view>`,
+
+  components: {
+    RenderlessListView,
+  },
+
+  props: {
+    list: Array,
+  },
+};
+
 
 const App = {
   template: `<div>
-  <list-view :items.sync="list">
-    <template #default="scope">
-      <b>{{ scope.item }}</b>
-    </template>
-    <template #remove-button="{ remove }">
-      <a href="#" @click="remove">Remove</a>
-    </template>
-  </list-view>
+    <ul-list-view :list.sync="list" />
   </div>`,
 
   components: {
-    ListView,
+    UlListView,
   },
 
   data() {
