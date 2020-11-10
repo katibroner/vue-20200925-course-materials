@@ -1,5 +1,8 @@
-import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.esm.browser.js';
+import { createApp } from './vue3.esm-browser.js';
+
 import { App } from './App.js';
 
-const app = new Vue(App);
-app.$mount('#app');
+const app = createApp(App);
+app.mount('#app');
+
+window.app = app;
